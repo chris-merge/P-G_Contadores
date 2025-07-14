@@ -46,7 +46,7 @@ body {
 }
 
 .steam {
-    background-image: url('../imagenes/Logo.jpg'); /* Reemplaza con tu imagen de vapor */
+    background-image: url('../imagenes/logo.jpg'); /* Reemplaza con tu imagen de vapor */
     opacity: 1;
 }
 
@@ -63,7 +63,7 @@ body {
 }
 
 .steamindex {
-    background-image: url('../Imagenes/Logo.jpg'); /* Reemplaza con tu imagen de vapor */
+    background-image: url('../imagenes/logo.jpg'); /* Reemplaza con tu imagen de vapor */
     opacity: 1;
     
     width: 100%;
