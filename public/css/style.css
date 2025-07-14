@@ -1,0 +1,181 @@
+body {
+    font-family: sans-serif;
+    background-color: #739fd3 ;
+     box-shadow: 0 4px 8px rgba(7, 6, 6, 0.1);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-size: cover; /* Para cubrir todo el fondo */
+}
+.index-container {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background-image: url('imagenes/logo.jpg'); /* Reemplaza con tu imagen de vapor */  
+    border-radius: 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.login-container {
+    display: flex;
+    width: 800px;
+    height: 400px;
+    background-color: #ffffff ;
+    border-radius: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;    
+}
+.animation-container {
+    width: 50%;
+    position: relative;
+    overflow: hidden;
+}
+
+.animation {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #f0f0f0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.steam {
+    background-image: url('../Imagenes/Logo.jpg'); /* Reemplaza con tu imagen de vapor */
+    opacity: 1;
+}
+
+
+.animationindex {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background:  #739fd3;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.steamindex {
+    background-image: url('../Imagenes/Logo.jpg'); /* Reemplaza con tu imagen de vapor */
+    opacity: 1;
+    
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-form {
+    width: 50%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-form h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #131212;
+}
+.index-form h2 {
+    font-family: 'Sans-serif', monospace;
+    position: relative;
+  overflow: hidden; /* Oculta el texto que se va a agregar */
+  white-space: nowrap; /* Evita saltos de línea */
+  border-right: .15em solid rgb(0, 0, 0); /* Crea el efecto de cursor */
+  animation: 
+    typing 3.5s steps(40, end),
+    blink-caret .75s step-end infinite;
+    
+}
+/* Animation for typing effect */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+/* Animation for the cursor blinking */
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: rgb(0, 0, 0); }
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+
+
+.login-form button {
+    font-family: 'Sans-serif', monospace;
+    background-color: #739fd3;
+    font-size: 16px;
+    color: #000000;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    
+}
+
+.login-form button:hover {
+    background-color: #046d6d;
+}
+
+.index-form {
+    display: flex;
+    flex-direction: column; /* O row, dependiendo de cómo quieras apilar tus botones */
+    justify-content: center; /* Centra verticalmente si es column, horizontalmente si es row */
+    align-items: center;   /* Centra horizontalmente si es column, verticalmente si es row */
+}
+
+.index-form button {
+    text-align: center;
+    font-family: 'Sans-serif', monospace;
+    background-color: #eceff3;
+    font-size: 17px;
+    color: #161616;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.index-form button:hover {
+    background-color: #046d6d;
+    color: #ddd;
+    text-align: center;
+}
+
+
+footer {
+            background-color: #e1734e;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed; /* Fija el footer en la parte inferior */
+            bottom: 0;
+            width: 100%; /* Asegura que el footer ocupe todo el ancho */
+        }

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JsonViewer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+ <!-- Navbar -->
+    <nav class="bg-white shadow-md py-4 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <!-- Logo a la izquierda -->
+            <div class="logo flex items-center">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/951383b3-4398-4c8a-9cae-1848fa050358.png" alt="Logo P&G Contadores - Letras corporativas azules sobre fondo blanco" class="h-12">
+            </div>
+
+            <!-- Secciones a la derecha -->
+            <div class="hidden md:flex space-x-8">
+                <a href="#servicios" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">Servicios</a>
+              
+                <a href="/jsonConvert" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">Convertir Json </a>
+                <a href="/logout" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">Cessar sesion</a>
+            </div>
+
+            <!-- Menú móvil -->
+            <button class="md:hidden focus:outline-none">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+  <!-- Contenedor principal que crece para ocupar el espacio -->
+  <div class="flex-grow">
+
+    <div class="max-w-4xl mx-auto py-8 px-4 flex flex-col h-full">
+
+      <header class="flex justify-between items-center mb-6">
+        <img src="logo.png" alt="Logo" id="logo" class="h-10">
+        <h1 class="text-2xl font-semibold">Compras</h1>
+        <div></div>
+      </header>
+
+      <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-lg p-6 mb-6 bg-white text-center hover:border-blue-400 transition-colors cursor-pointer">
+        <input type="file" id="file-input" accept=".json" hidden multiple />
+        <p class="text-gray-600">Arrastra tus archivos JSON aquí o 
+          <label for="file-input" class="text-blue-600 font-medium cursor-pointer hover:underline">Examinar</label>
+        </p>
+      </div>
+
+      <div id="table-container" class="overflow-x-auto mb-6 w-full">
+        <!-- Aquí aparecerá la tabla generada -->
+      </div>
+
+      <div class="flex gap-3 mb-8 flex-wrap">
+        <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow" onclick="exportarExcel()">Exportar a Excel</button>
+        <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow" onclick="exportarCSV_PuntoYComa()">Exportar a CSV</button>
+        <button class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow" onclick="prepararImpresion()">Imprimir</button>
+        <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow" onclick="limpiarTabla()">Limpiar tabla</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer fijo al fondo cuando el contenido es poco -->
+  <footer class="bg-gray-800 text-white py-6">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-col items-center">
+        <div class="text-center">
+          <p class="text-sm">&copy; 2024 My System. All rights reserved - Desarrollador J.R.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <script src="js/tranformacion_json.js"></script>
+  <script src="js/cookie.js"></script>
+</body>
+</html>

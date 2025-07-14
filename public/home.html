@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P&G Contadores | Bienvenida</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hero {
+            background: linear-gradient(135deg, rgba(0, 114, 206, 0.8) 0%, rgba(0, 168, 232, 0.6) 100%);
+        }
+        
+        .logo {
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #0072CE;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body class="font-sans bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md py-4 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <!-- Logo a la izquierda -->
+            <div class="logo flex items-center">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/951383b3-4398-4c8a-9cae-1848fa050358.png" alt="Logo P&G Contadores - Letras corporativas azules sobre fondo blanco" class="h-12">
+            </div>
+
+            <!-- Secciones a la derecha -->
+            <div class="hidden md:flex space-x-8">
+                <a href="#servicios" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">Servicios</a>
+              
+                <a href="/jsonConvert" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">Convertir Json </a>
+                <a href="/logout" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">Cessar sesion</a>
+            </div>
+
+            <!-- Menú móvil -->
+            <button class="md:hidden focus:outline-none">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero py-20 md:py-32 text-white">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">Bienvenidos a P&G Contadores</h1>
+            <p class="text-xl md:text-2xl max-w-3xl mx-auto mb-10">
+                Soluciones contables integrales para impulsar el éxito de tu negocio
+            </p>
+            <button class="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors shadow-lg transform hover:scale-105">
+                Conoce nuestros servicios
+            </button>
+        </div>
+    </section>
+
+    <!-- Información breve -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-12">Nuestra Experiencia en Tus Finanzas</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                    <div class="text-blue-600 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Contabilidad Corporativa</h3>
+                    <p class="text-gray-600">Gestión profesional para empresas de todos los tamaños</p>
+                </div>
+                <div class="p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                    <div class="text-blue-600 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Declaraciones Fiscales</h3>
+                    <p class="text-gray-600">Cumplimiento regulatorio preciso y oportuno</p>
+                </div>
+                <div class="p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                    <div class="text-blue-600 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Asesoría Financiera</h3>
+                    <p class="text-gray-600">Estrategias personalizadas para tu crecimiento</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-6 md:mb-0">
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/21356970-ee10-4f57-bdae-056f8a619791.png" alt="Logo P&G Contadores en blanco sobre fondo oscuro" class="h-12">
+                    <p class="mt-4 text-gray-400">Profesionales comprometidos con tu éxito financiero</p>
+                </div>
+                <div class="grid grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Enlaces</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-white">Inicio</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">Servicios</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">Nosotros</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">Contacto</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Contacto</h3>
+                        <address class="not-italic text-gray-400">
+                            <p>Av. Contadores 123</p>
+                            <p>Ciudad de México</p>
+                            <p class="mt-2">Tel: 55 1234 5678</p>
+                            <p>Email: contacto@pgcontadores.com</p>
+                        </address>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>© 2023 P&G Contadores. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle functionality
+        const mobileMenuButton = document.querySelector('button[class*="md:hidden"]');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileMenuButton.addEventListener('click', () => {
+            navLinks.classList.toggle('hidden');
+        });
+    </script>
+    <script src="js/cookie.js"></script>
+</body>
+
+</html>

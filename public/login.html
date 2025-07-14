@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="css/style.css">     
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
+    </head>
+    <body>
+        
+        <div class="login-container">
+            <div class="animation-container">
+                <div class="animation steam"></div>
+            </div>
+        <div class="login-form">
+            <form action="/login" method="post" autocomplete="off">
+                <h2>Bienvenidos</h2>
+                <hr>
+                <div class="input-group">
+                    <h3 id="subtitulo1" for="usuario">Usuario</h3>
+                    <input type="text" name="usuario" id="usuario" class="entrada" required onkeypress="bloquearEspacios(event)"/>
+                    <br/>
+                </div>
+                
+                <div class="input-group">
+                    <h3 id="subtitulo2" for="contraseña">Codigo</h3>
+                    <input type="password" id="clave" name="clave" class="entrada" required>
+                </div>
+            
+                    <input type="checkbox" id="showPassword" onclick="togglePasswordVisibility()"> Ver Contraseña
+                <br/><br/>
+                    <button type="submit" ><b>Entrar</b></button>
+                <br/>
+            </form>
+        </div>
+            <br>                                                      
+      </div>
+
+    </body>
+    <script src="js/login.js"></script>  
+</html>
