@@ -54,7 +54,7 @@ function mapData(json) {
     const cuerpo = (json.cuerpoDocumento || [])[0] || {};
     const proveedor = json.emisor || {};
     const identificacionCod= json.identificacion || {};
-
+    // rama principal
     return {
         "Número": cuerpo.numItem || "",
         "Fecha de Emisión": json.identificacion?.fecEmi || "",
@@ -72,6 +72,7 @@ function mapData(json) {
         "Compras a Sujetos Excluidos": resumen.totalNoGravado || "0.00"
     };
 }
+
 
 function renderTable(data) {
     const container = document.getElementById("table-container");
