@@ -4,15 +4,13 @@
                 event.preventDefault();
             }
         }
-        //Muestras la contraseña en el input
-        function togglePasswordVisibility() {
-            var passwordInput = document.getElementById("passwordInput");
-            var showPasswordCheckbox = document.getElementById("showPassword");   
+     function togglePasswordVisibility() {
+    var passwordInput = document.getElementById("clave");
+    var showPasswordCheckbox = document.getElementById("showPassword");
 
-
-            if (showPasswordCheckbox.checked) {
-                passwordInput.type = "text";
-            } else {
-                passwordInput.type = "password";
-            }
-        }
+    if (showPasswordCheckbox.checked) {
+        passwordInput.type = "text";
+    } else {
+        passwordInput.type = "password";
+    }
+}

@@ -1,3 +1,4 @@
+
 let ultimoJson = [];
 
 document.getElementById("file-input").addEventListener("change", handleFiles);
@@ -36,6 +37,7 @@ function parseFiles(files) {
                 const data = mapData(json);
                 if (data) ultimoJson.push(data);
             } catch (err) {
+                console.error(`Error al leer el archivo: ${file.name}`, err);
                 alert(`Error al leer el archivo: ${file.name}`);
             } finally {
                 pending--;
@@ -49,11 +51,17 @@ function parseFiles(files) {
     });
 }
 
+function toNumber(val) {
+    const num = parseFloat(String(val).replace(",", "").replace(/\$/g, "").trim());
+    return isNaN(num) ? 0 : num;
+}
+
 function mapData(json) {
     const resumen = json.resumen || {};
     const cuerpo = (json.cuerpoDocumento || [])[0] || {};
     const proveedor = json.emisor || {};
     const identificacionCod= json.identificacion || {};
+    // modificacion  rama 
 
     return {
         "Número": cuerpo.numItem || "",
@@ -72,6 +80,7 @@ function mapData(json) {
         "Compras a Sujetos Excluidos": resumen.totalNoGravado || "0.00"
     };
 }
+
 
 function renderTable(data) {
     const container = document.getElementById("table-container");
@@ -108,11 +117,9 @@ function renderTable(data) {
         });
     });
 
-    // Totales
     const totalRow = tbody.insertRow();
     headers.forEach(key => {
         const cell = totalRow.insertCell();
-
         const camposSumables = [
             "Compras Exentas",
             "Compras Gravadas",
@@ -169,99 +176,58 @@ function exportarExcel() {
         return copy;
     });
 
-    console.log("Data que se exportará a Excel:", JSON.stringify(dataExport, null, 2));
-
     const ws = XLSX.utils.json_to_sheet(dataExport);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Compras");
     const fecha = new Date().toISOString().split("T")[0];
     XLSX.writeFile(wb, `compras_${fecha}.xlsx`);
 }
-
-// Exportar CSV usando punto y coma (;) como separador de columnas (recomendado para ES/LatAm)
 function exportarCSV_PuntoYComa() {
-    const dataExport = ultimoJson.map(item => {
-        const copy = { ...item };
-        for (const key in copy) {
-            if (isMoneyField(key)) {
-                copy[key] = parseFloat(String(copy[key]).replace(",", "").replace(/\$/g, "")) || 0;
-            }
-        }
-        return copy;
-    });
-
-    console.log("Data que se exportará a CSV (punto y coma):", JSON.stringify(dataExport, null, 2));
-
-    const ws = XLSX.utils.json_to_sheet(dataExport);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Compras");
-
-    const fecha = new Date().toISOString().split("T")[0];
-    XLSX.writeFile(wb, `compras_${fecha}_puntoycoma.csv`, { bookType: "csv", FS: ";" });
-}
-
-function prepararImpresion() {
-    const container = document.getElementById("table-container");
-    const originalTable = container.querySelector("table");
-    if (!originalTable) return alert("No hay tabla para imprimir.");
-
-    const newTable = document.createElement("table");
-    newTable.classList.add("table");
-
-    const thead = newTable.createTHead();
-    const originalTheadRow = originalTable.tHead.rows[0];
-    const newHeadRow = thead.insertRow();
-    for (let i = 0; i < originalTheadRow.cells.length; i++) {
-        const th = originalTheadRow.cells[i].cloneNode(true);
-        newHeadRow.appendChild(th);
-    }
-
-    const tbody = newTable.createTBody();
-    for (const row of originalTable.tBodies[0].rows) {
-        const newRow = tbody.insertRow();
-        for (let i = 0; i < row.cells.length; i++) {
-            const cell = row.cells[i].cloneNode(true);
-            newRow.appendChild(cell);
-        }
-    }
-
-    const printWindow = window.open("", "", "width=1200,height=800");
-    if (!printWindow) {
-        alert("Por favor permite ventanas emergentes para imprimir.");
+    if (!ultimoJson || ultimoJson.length === 0) {
+        alert("No hay datos para exportar.");
         return;
     }
 
-    printWindow.document.write(`
-    <html>
-      <head>
-        <title>Imprimir Compras</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <style>
-          body { font-family: 'Segoe UI', sans-serif; padding: 20px; }
-          table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
-          table th, table td { border: 1px solid #dee2e6; padding: 8px; text-align: center; white-space: nowrap; }
-          table th { background-color: #7fb3d5 !important; font-weight: bold; }
-        </style>
-      </head>
-      <body>
-        <h3>Listado de Compras</h3>
-        <div id="tablaCompleta"></div>
-      </body>
-    </html>
-  `);
+    const headers = Object.keys(ultimoJson[0]);
+    const csvRows = [];
 
-    printWindow.document.close();
+    // Encabezados
+    csvRows.push(headers.join(";"));
 
-    printWindow.addEventListener('load', () => {
-        printWindow.document.getElementById("tablaCompleta").appendChild(newTable);
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
+    // Filas de datos
+    ultimoJson.forEach(row => {
+        const values = headers.map(header => {
+            let cell = row[header];
+
+            // Eliminar formato monetario si aplica
+            if (isMoneyField(header)) {
+                cell = String(cell).replace(/\$/g, "").replace(/,/g, "").trim();
+            }
+
+            // Escapar comillas dobles
+            if (typeof cell === "string" && cell.includes('"')) {
+                cell = cell.replace(/"/g, '""');
+            }
+
+            // Encerrar en comillas si contiene punto y coma
+            if (typeof cell === "string" && cell.includes(";")) {
+                cell = `"${cell}"`;
+            }
+
+            return cell;
+        });
+        csvRows.push(values.join(";"));
     });
-}
 
-function limpiarTabla() {
-    const container = document.getElementById("table-container");
-    container.innerHTML = "";
-    ultimoJson = [];
+    const csvContent = csvRows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const fecha = new Date().toISOString().split("T")[0];
+    const filename = `compras_${fecha}.csv`;
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
