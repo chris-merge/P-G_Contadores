@@ -59,26 +59,129 @@ function toNumber(val) {
 function mapData(json) {
     const resumen = json.resumen || {};
     const cuerpo = (json.cuerpoDocumento || [])[0] || {};
-    const proveedor = json.emisor || {};
+    const emisor = json.emisor || {};
     const identificacionCod= json.identificacion || {};
+    const apendice=json.apendice ||{};
     // modificacion  rama 
-
+     const descripcion = cuerpo.descripcion?.toLowerCase() || "";
+    const esCombustible = descripcion.includes("combustible") || descripcion.includes("gasolina") || descripcion.includes("servicio completo") || descripcion.includes("REGULAR");
+    const exenta = toNumber(cuerpo.ventaExenta);
+    const gravada = toNumber(cuerpo.ventaGravada);
+    //firma
+    const firma = json.firmaElectronica || {};
+    const sello = json.selloRecibido || {};
     return {
-        "Número": cuerpo.numItem || "",
-        "Fecha de Emisión": json.identificacion?.fecEmi || "",
-        "Clase de Documento": cuerpo.tipoItem || "",
-        "Tipo de Documento": json.identificacion?.tipoDte || "",
-        "Número de Documento Codigo": identificacionCod.codigoGeneracion && identificacionCod.codigoGeneracion.trim() !== "" ? `${identificacionCod.codigoGeneracion}` : "N/D",
-        "N.R.C": proveedor.nrc ? `${proveedor.nrc}` : "",
-        "N.I.T o DUI": proveedor.nit ? `${proveedor.nit}` : "",
-        "Nombre del proveedor": proveedor.nombre || "",
-        "Compras Exentas": cuerpo.ventaExenta || "0.00",
-        "Compras Gravadas": cuerpo.ventaGravada || "0.00",
-        "Anticipo a Cuenta IVA Retenido": resumen.ivaRete1 || "0.00",
-        "Anticipo a Cuenta IVA Percibido": resumen.ivaPerci1 || "0.00",
-        "Total de compras": resumen.totalPagar || "0.00",
-        "Compras a Sujetos Excluidos": resumen.totalNoGravado || "0.00"
+         //bloque del json identificacion
+        "identificacion version": identificacionCod.version || "",
+        "ambiente": identificacionCod.ambiente || "",
+        "tipoDte": identificacionCod.tipoDte || "",  
+        "numeroControl": identificacionCod.numeroControl || "",  
+        "codigoGeneracion": identificacionCod.codigoGeneracion || "",  
+        "tipoModelo": identificacionCod.tipoModelo || "",  
+        "tipoOperacion": identificacionCod.tipoOperacion || "",
+        "tipoOperacion": identificacionCod.tipoOperacion || "",
+        "tipoContingencia": identificacionCod.tipoContingencia || "",
+        "motivoContin": identificacionCod.motivoContin || "",
+        "fecEmi": identificacionCod.fecEmi || "",
+        "horEmi": identificacionCod.horEmi || "",
+        "tipoMoneda": identificacionCod.tipoMoneda || "",
+        //emisor documentoRelacionado
+        "documentoRelacionado": json.documentoRelacionado?.documentoRelacionado || "",
+        //emisor
+        "emisor nit": json.emisor?.emisor || "",
+        "nrc": json.emisor?.nrc || "",
+        "nombre": json.documentoRelacionado?.nombre || "",
+        "codActividad": json.emisor?.codActividad || "",
+        "descActividad": json.emisor?.descActividad || "",
+        "nombreComercial": json.emisor?.nombreComercial || "",
+        "tipoEstablecimiento": json.emisor?.tipoEstablecimiento || "",
+        "direccion departamento ": json.emisor.direccion?.departamento || "",
+        "municipio": json.emisor.direccion?.municipio || "",
+        "complemento": json.emisor.direccion?.complemento || "",
+        "telefono": json.emisor?.telefono || "",
+        "correo": json.emisor?.correo || "",
+        "codEstableMH": json.emisor?.codEstableMH || "",
+        "codEstable": json.emisor?.codEstable || "",
+        "codPuntoVentaMH": json.emisor?.codPuntoVentaMH || "",
+        "codPuntoVenta": json.emisor?.codPuntoVenta || "",
+        //receptor
+        "receptor nit": json.receptor?.nit || "",
+        "nrc ": json.receptor?.nrc || "",
+        "nombre": json.receptor?.nombre || "",
+        "direccion departamento": json.receptor.direccion?.departamento || "",
+        "municipio": json.receptor.direccion?.municipio || "",
+        "complemento": json.receptor.direccion?.complemento || "",
+        "telefono": json.receptor?.telefono || "",
+        "correo": json.receptor?.correo || "",
+        "correo": json.receptor?.correo || "",
+        "otrosDocumentos": json.otrosDocumentos?.otrosDocumentos || "",
+        "ventaTercero": json.ventaTercero?.ventaTercero || "",
+        //cuerpoDocumento
+        "cuerpoDocumento numItem": json.cuerpoDocumento?.numItem || "",
+        "tipoItem": json.cuerpoDocumento?.tipoItem || "",      
+        "numeroDocumento": json.cuerpoDocumento?.numeroDocumento || "",
+        "codigo": json.cuerpoDocumento?.codigo || "",
+        "codTributo": json.cuerpoDocumento?.codTributo || "",
+        "descripcion": json.cuerpoDocumento?.descripcion || "",
+        "cantidad": json.cuerpoDocumento?.cantidad || "",
+        "uniMedida": json.cuerpoDocumento?.uniMedida || "",
+        "precioUni": json.cuerpoDocumento?.precioUni || "",
+        "montoDescu": json.cuerpoDocumento?.montoDescu || "",
+        "ventaNoSuj": json.cuerpoDocumento?.ventaNoSuj || "",
+        "ventaExenta": json.cuerpoDocumento?.ventaExenta || "",
+        "ventaGravada": json.cuerpoDocumento?.ventaGravada || "",
+      "tributos": Array.isArray(cuerpo.tributos)?cuerpo.tributos.map(t => {
+      if (typeof t === 'object' && t !== null) {
+        return t.codigo || JSON.stringify(t);
+      }
+      return t;}).join(", "): "",
+        "psv": json.cuerpoDocumento?.psv || "",
+        "noGravado": json.cuerpoDocumento?.noGravado || "",
+        
+         //resumen
+        "resumen totalNoSuj ": json.resumen?.totalNoSuj || "",
+        "Compras Exentas": esCombustible?"0.00" : exenta.toFixed(2),
+        "Compras Gravadas": esCombustible?(exenta + gravada).toFixed(2) : gravada.toFixed(2),
+        "subTotalVentas": json.resumen?.subTotalVentas || "",
+        "descuNoSuj": json.resumen?.descuNoSuj || "",
+        "descuExenta": json.resumen?.descuExenta || "",
+        "descuGravada": json.resumen?.descuGravada || "",
+        "porcentajeDescuento": json.resumen?.porcentajeDescuento || "",     
+        "totalDescu": json.resumen?.totalDescu || "",     
+       "tributos": Array.isArray(resumen.tributos) ? resumen.tributos.join(", ") : "",    
+        "subTotal": json.resumen?.subTotal || "",    
+       "Anticipo a Cuenta IVA Retenido": resumen.ivaRete1 || "0.00",
+        "Anticipo a Cuenta IVA Percibido": resumen.ivaPerci1 || "0.00",      
+        "reteRenta": json.resumen?.porcentajeDescuento || "",     
+        "montoTotalOperacion": json.resumen?.montoTotalOperacion || "",     
+        "totalNoGravado": json.resumen?.totalNoGravado || "",     
+
+        "totalLetras": json.resumen?.totalLetras || "",
+        "saldoFavor": json.resumen?.ventaExenta || "",
+        "condicionOperacion": json.resumen?.condicionOperacion || "",
+        "tributos": Array.isArray(resumen.pagos) ? resumen.pagos.join(", ") : "", 
+        "numPagoElectronico": json.resumen?.numPagoElectronico || "",
+        "Compras a Sujetos Excluidos": resumen.totalNoGravado || "0.00",
+       "Es Combustible": esCombustible?"Sí" : "No",
+         "Total de compras": resumen.totalPagar || "0.00",
+        //extension
+        "extension nombEntrega ": json.extension?.nombEntrega || "",
+        "docuEntrega": json.extension?.docuEntrega || "", 
+        "nombRecibe": json.extension?.nombRecibe || "", 
+        "docuRecibe": json.extension?.docuRecibe || "", 
+        "observaciones": json.extension?.observaciones || "", 
+        "placaVehiculo": json.extension?.placaVehiculo || "", 
+        //apendice
+       "Documento Interno": (json.apendice?.find(a => a.campo === "DocInterno")?.valor) || "",
+        "CodigoVendedor": (json.apendice?.find(a => a.campo === "CodVendedor")?.valor) || "",
+        "NombreVendedor": (json.apendice?.find(a => a.campo === "NomVendedor")?.valor) || "",
+        "CodigoCliente": (json.apendice?.find(a => a.campo === "CodCliente")?.valor) || "",
+
+        "firmaElectronica":  JSON.stringify(firma) || "error",
+        "selloRecibido": JSON.stringify(sello) || "error"
+       
     };
+   
 }
 
 
