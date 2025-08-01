@@ -61,9 +61,8 @@ function mapData(json) {
     const cuerpo = (json.cuerpoDocumento || [])[0] || {};
     const emisor = json.emisor || {};
     const identificacionCod= json.identificacion || {};
-<<<<<<< HEAD
+
     // rama principal
-=======
     const apendice=json.apendice ||{};
     // modificacion  rama 
      const descripcion = cuerpo.descripcion?.toLowerCase() || "";
@@ -81,7 +80,7 @@ function mapData(json) {
     //"tributos Resumen": Array.isArray(resumen.tributos)?resumen.tributos.join(", ") : "", 
 //const atributosResumen=resumen.tributos.join(', ')|| {};
 const atributosResumen=resumen.tributos.map(t=> `${t.codigo}:${t.descripcion} ($${t.valor.toFixed(2)})`).join(', ');
->>>>>>> modificacion
+
     return {
          //bloque del json identificacion
         "identificacion version": identificacionCod.version || "",
