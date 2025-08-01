@@ -5,6 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>JsonViewer</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.table th, .table td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table tbody tr:hover {
+  background-color: #eef;
+}
+</style>
+
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
  <!-- Navbar -->
@@ -49,9 +77,10 @@
         </p>
       </div>
 
-      <div id="table-container" class="overflow-x-auto mb-6 w-full">
-        <!-- Aquí aparecerá la tabla generada -->
-      </div>
+<div id="table-container" class="overflow-x-auto mb-6 w-full">
+  <!-- Aquí aparecerá la tabla generada -->
+</div>
+
 
       <div class="flex gap-3 mb-8 flex-wrap">
         <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow" onclick="exportarExcel()">Exportar a Excel</button>
