@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subir PDF y Convertir a JSON</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Librerías PDF.js y Tesseract -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
+</script>
+
+<style>
+    .drag-area { border: 2px dashed #3B82F6; transition: all 0.3s ease; }
+    .drag-area.active { border-color: #10B981; background-color: rgba(16,185,129,0.1); }
+    .file-item { transition: all 0.3s ease; }
+    .file-item:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .progress-bar { transition: width 0.3s ease; }
+</style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+<div class="container mx-auto px-4 py-8">
+
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <div class="w-24 h-24 mx-auto mb-6 bg-blue-100 rounded-full flex items-center justify-center">
+            <i class="fas fa-file-pdf text-4xl text-blue-600"></i>
+        </div>
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">Subir PDF y Convertir a JSON</h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Sube tu PDF, lo analizamos y generamos un JSON con tu plantilla automáticamente.
+        </p>
+    </div>
+
+    <!-- Upload Area -->
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div id="dragArea" class="drag-area p-8 text-center cursor-pointer">
+            <input type="file" id="fileInput" class="hidden" accept=".pdf" multiple>
+            <button onclick="fileInput.click()" 
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105">
+                <i class="fas fa-folder-open mr-2"></i>Seleccionar Archivos
+            </button>
+            <p class="text-sm text-gray-400 mt-4">Formatos aceptados: PDF • Máximo 50MB por archivo</p>
+        </div>
+
+        <!-- Lista -->
+        <div id="fileList" class="p-6 bg-gray-50 hidden">
+            <h4 class="font-semibold text-gray-800 mb-4">Archivos seleccionados</h4>
+            <div id="filesContainer" class="space-y-3"></div>
+        </div>
+
+        <!-- Botón subir -->
+        <div class="p-6 bg-white border-t">
+            <button id="uploadBtn" 
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled>
+                <i class="fas fa-upload mr-2"></i>Subir Archivos
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div id="uploadedTable" class="max-w-4xl mx-auto mt-8 bg-white rounded-2xl shadow-xl p-6 hidden">
+        <h4 class="font-semibold text-gray-800 mb-4">Archivos procesados</h4>
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nombre</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Tamaño</th>
+                    <th class="px-4 py-2 text-center text-sm font-semibold text-gray-700">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody" class="divide-y divide-gray-200"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// ---------------- JSON Template ----------------
+const jsonTemplate = {
+  "identificacion": { "version": "", "ambiente": "", "tipoDte": "", "numeroControl": "", "codigoGeneracion": "", "tipoModelo": "", "tipoOperacion": "", "tipoContingencia": null, "motivoContin": null, "fecEmi": "", "horEmi": "", "tipoMoneda": "USD" },
+  "documentoRelacionado": null,
+  "emisor": { "nit": "", "nrc": "", "nombre": "", "codActividad": "", "descActividad": "", "nombreComercial": "", "tipoEstablecimiento": "", "direccion": { "departamento": "", "municipio": "", "complemento": "" }, "telefono": "", "correo": "", "codEstableMH": "", "codEstable": null, "codPuntoVentaMH": "", "codPuntoVenta": null },
+  "receptor": { "nit": "", "nrc": "", "nombre": "", "codActividad": "", "descActividad": "", "nombreComercial": null, "direccion": { "departamento": "", "municipio": "", "complemento": "" }, "telefono": "", "correo": "" },
+  "otrosDocumentos": null,
+  "ventaTercero": null,
+  "cuerpoDocumento": [ { "numItem": "", "tipoItem": "", "numeroDocumento": null, "codigo": null, "codTributo": null, "descripcion": "", "cantidad": "", "uniMedida": "", "precioUni": "", "montoDescu": "", "ventaNoSuj": "", "ventaExenta": "", "ventaGravada": "", "tributos": [], "psv": "", "noGravado": "" } ],
+  "resumen": { "totalNoSuj": "", "totalExenta": "", "totalGravada": "", "subTotalVentas": "", "descuNoSuj": "", "descuExenta": "", "descuGravada": "", "porcentajeDescuento": "", "totalDescu": "", "tributos": [], "subTotal": "", "ivaPerci1": "", "ivaRete1": "", "reteRenta": "", "montoTotalOperacion": "", "totalNoGravado": "", "totalPagar": "", "totalLetras": "", "saldoFavor": "", "condicionOperacion": "", "pagos": [], "numPagoElectronico": null },
+  "extension": { "nombEntrega": null, "docuEntrega": null, "nombRecibe": null, "docuRecibe": null, "observaciones": "", "placaVehiculo": null },
+  "apendice": [],
+  "firmaElectronica": "",
+  "selloRecibido": ""
+};
+
+// ---------------- Variables ----------------
+const dragArea = document.getElementById('dragArea');
+const fileInput = document.getElementById('fileInput');
+const fileList = document.getElementById('fileList');
+const filesContainer = document.getElementById('filesContainer');
+const uploadBtn = document.getElementById('uploadBtn');
+const uploadedTable = document.getElementById('uploadedTable');
+const tableBody = document.getElementById('tableBody');
+let selectedFiles = [];
+
+// ---------------- Drag & Drop ----------------
+['dragenter','dragover','dragleave','drop'].forEach(e=>dragArea.addEventListener(e,preventDefaults,false));
+['dragenter','dragover'].forEach(e=>dragArea.addEventListener(e,()=>dragArea.classList.add('active')));
+['dragleave','drop'].forEach(e=>dragArea.addEventListener(e,()=>dragArea.classList.remove('active')));
+dragArea.addEventListener('drop',e=>handleFiles(e.dataTransfer.files));
+fileInput.addEventListener('change',e=>handleFiles(e.target.files));
+dragArea.addEventListener('click',()=>fileInput.click());
+
+function preventDefaults(e){ e.preventDefault(); e.stopPropagation(); }
+function handleFiles(files){
+  const pdfFiles = Array.from(files).filter(f=>f.type==='application/pdf');
+  if(!pdfFiles.length) return alert('Solo PDFs');
+  selectedFiles = [...selectedFiles,...pdfFiles];
+  updateFileList(); updateUploadButton();
+}
+function updateFileList(){
+  filesContainer.innerHTML='';
+  selectedFiles.forEach((f,i)=>{
+    const div=document.createElement('div');
+    div.className='file-item bg-white p-4 rounded-lg border border-gray-200 flex items-center justify-between';
+    div.innerHTML=`<div class="flex items-center space-x-3">
+      <i class="fas fa-file-pdf text-red-600"></i>
+      <div><p>${f.name}</p><p class="text-xs text-gray-500">${(f.size/1024).toFixed(1)} KB</p></div></div>
+      <button onclick="removeFile(${i})" class="text-red-500"><i class="fas fa-times"></i></button>`;
+    filesContainer.appendChild(div);
+  });
+  fileList.classList.toggle('hidden',selectedFiles.length===0);
+}
+function removeFile(i){ selectedFiles.splice(i,1); updateFileList(); updateUploadButton();}
+function updateUploadButton(){ uploadBtn.disabled=selectedFiles.length===0; }
+
+// ---------------- OCR / Text Extraction ----------------
+async function extractText(file){
+  const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
+  let fullText = "";
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const textContent = await page.getTextContent();
+    if (textContent.items.length > 0) {
+      fullText += textContent.items.map(t => t.str).join(" ") + "\n";
+    } else {
+      const viewport = page.getViewport({scale:1.5});
+      const canvas=document.createElement('canvas');
+      canvas.width=viewport.width; canvas.height=viewport.height;
+      await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+      const {data:{text}}=await Tesseract.recognize(canvas,'spa');
+      fullText += text + "\n";
+    }
+  }
+  return fullText.trim();
+}
+
+// ---------------- Upload Simulado ----------------
+uploadBtn.addEventListener('click',()=>{
+  if(!selectedFiles.length) return;
+  selectedFiles.forEach((f,i)=>{
+    const fileItem=filesContainer.children[i];
+    const prog=document.createElement('div');
+    prog.innerHTML=`<div class="w-full bg-gray-200 h-2 rounded"><div class="progress-bar bg-blue-600 h-2 rounded" style="width:0%"></div></div>`;
+    fileItem.appendChild(prog);
+
+    let p=0; const int=setInterval(()=>{
+      p+=20; prog.querySelector('.progress-bar').style.width=p+'%';
+      if(p>=100){ clearInterval(int); processFile(f); }
+    },200);
+  });
+});
+
+// ---------------- Procesar y crear JSON ----------------
+async function processFile(file){
+  const text = await extractText(file);
+  const data = JSON.parse(JSON.stringify(jsonTemplate));
+
+  // ---------------- Identificación ----------------
+  data.identificacion.version = (text.match(/Ver\.(\d+)/i)?.[1]) || "N/D";
+  data.identificacion.numeroControl = (text.match(/Número de Control\s*:\s*([A-Z0-9-]+)/i)?.[1]) || "";
+  data.identificacion.codigoGeneracion = (text.match(/Código de Generación[:\s]+([A-Z0-9-]+)/i)?.[1]) || "";
+  data.identificacion.tipoModelo = (text.match(/Modelo de Facturación:\s*(\w+)/i)?.[1]) || "";
+  data.identificacion.tipoOperacion = (text.match(/Tipo de Transmisión:\s*(\w+)/i)?.[1]) || "";
+  const fechaHora = text.match(/(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}:\d{2})/);
+  if(fechaHora){ data.identificacion.fecEmi = fechaHora[1]; data.identificacion.horEmi = fechaHora[2]; }
+  data.identificacion.tipoDte = (text.match(/NOTA DE DÉBITO|FACTURA|COMPROBANTE/i)?.[0]) || "";
+
+  // ---------------- Emisor ----------------
+  data.emisor.nombre = (text.match(/EMISOR[\s\S]*?Nombre o razón social:\s*([^\n]+)/i)?.[1])?.trim() || "";
+  data.emisor.nit = (text.match(/EMISOR[\s\S]*?NIT:\s*([0-9-]+)/i)?.[1]) || "";
+  data.emisor.nrc = (text.match(/EMISOR[\s\S]*?NRC:\s*([0-9-]+)/i)?.[1]) || "";
+  data.emisor.descActividad = (text.match(/Actividad económica\s*:\s*([^\n]+)/i)?.[1]) || "";
+  data.emisor.direccion.complemento = (text.match(/Dirección:\s*([^\n]+)/i)?.[1])?.trim() || "";
+  data.emisor.telefono = (text.match(/Número de teléfono:\s*(\d+)/i)?.[1]) || "";
+  data.emisor.correo = (text.match(/Correo electrónico:\s*([^\s]+)/i)?.[1]) || "";
+  data.emisor.tipoEstablecimiento = (text.match(/Tipo de establecimiento:\s*([^\n]+)/i)?.[1]) || "";
+
+  // ---------------- Receptor ----------------
+  data.receptor.nombre = (text.match(/RECEPTOR[\s\S]*?Nombre o razón social:\s*([^\n]+)/i)?.[1])?.trim() || "";
+  data.receptor.nit = (text.match(/RECEPTOR[\s\S]*?NIT:\s*([0-9-]+)/i)?.[1]) || "";
+  data.receptor.nrc = (text.match(/RECEPTOR[\s\S]*?NRC:\s*([0-9-]+)/i)?.[1]) || "";
+  data.receptor.descActividad = (text.match(/RECEPTOR[\s\S]*?Actividad económica\s*:\s*([^\n]+)/i)?.[1]) || "";
+  data.receptor.direccion.complemento = (text.match(/RECEPTOR[\s\S]*?Dirección:\s*([^\n]+)/i)?.[1])?.trim() || "";
+  data.receptor.telefono = (text.match(/RECEPTOR[\s\S]*?Número de teléfono:\s*(\d+)/i)?.[1]) || "";
+  data.receptor.correo = (text.match(/RECEPTOR[\s\S]*?Correo electrónico:\s*([^\s]+)/i)?.[1]) || "";
+
+  // ---------------- Documento Relacionado ----------------
+  const docRel = text.match(/Comprobante de Crédito Fiscal\s+(\d+)\s+(\d{4}-\d{2}-\d{2})/i);
+  if(docRel){ data.documentoRelacionado = { tipoDocumento: "Comprobante de Crédito Fiscal", numero: docRel[1], fecha: docRel[2] }; }
+
+  // ---------------- Cuerpo Documento ----------------
+  const item = text.match(/1\s+([\d.,]+)\s+Unidad\s+([^\d]+)\s+([\d.,]+)/i);
+  if(item){
+    data.cuerpoDocumento[0].numItem = "1";
+    data.cuerpoDocumento[0].cantidad = item[1];
+    data.cuerpoDocumento[0].uniMedida = "Unidad";
+    data.cuerpoDocumento[0].descripcion = item[2].trim();
+    data.cuerpoDocumento[0].precioUni = item[3];
+    data.cuerpoDocumento[0].ventaGravada = item[3];
+  }
+
+  // ---------------- Resumen ----------------
+  data.resumen.subTotal = (text.match(/Sub-Total:\s*([\d.,]+)/i)?.[1]) || "";
+  data.resumen.montoTotalOperacion = (text.match(/Monto Total de la Operación:\s*([\d.,]+)/i)?.[1]) || "";
+  data.resumen.totalPagar = data.resumen.montoTotalOperacion;
+  data.resumen.totalLetras = (text.match(/Valor en Letras:\s*([^\n]+)/i)?.[1]) || "";
+  data.resumen.condicionOperacion = (text.match(/Condición de la Operación:\s*([^\n]+)/i)?.[1]) || "";
+  const iva = text.match(/Impuesto al Valor Agregado 13%\s*([\d.,]+)/i);
+  if(iva){ data.resumen.tributos = [ {codigo:"IVA", descripcion:"Impuesto al Valor Agregado 13%", valor:iva[1]} ]; }
+
+  // ---------------- Extensión ----------------
+  data.extension.observaciones = (text.match(/Observaciones:\s*([^\n]+)/i)?.[1]) || "";
+
+  // Agregar a tabla
+  addRowToTable(file, data);
+}
+
+// ---------------- Tabla ----------------
+function addRowToTable(file,jsonData){
+  const blob=new Blob([JSON.stringify(jsonData,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const row=document.createElement('tr');
+  row.innerHTML=`
+    <td class="px-4 py-2">${file.name}</td>
+    <td class="px-4 py-2">${(file.size/1024).toFixed(1)} KB</td>
+    <td class="px-4 py-2 text-center">
+      <a href="${url}" download="${file.name.replace('.pdf','')}.json"
+         class="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded">Descargar JSON</a>
+    </td>`;
+  tableBody.appendChild(row);
+  uploadedTable.classList.remove('hidden');
+}
+</script>
+</body>
+</html>

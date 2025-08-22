@@ -62,6 +62,14 @@ app.get('/home', verificarSesion, (req, res) => {
 app.get('/json', verificarSesion, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'json.html'));
 });
+/*
+PdfConvertir
+*/
+// Página Convertir PDF A json 
+app.get('/PdfConvertir', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'View', 'PDF_JSON.html'));
+});
+
 
 // Página fuera de línea (404 personalizada)
 app.get('/Fuera_Linea', (req, res) => {
